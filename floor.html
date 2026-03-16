@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Occupancy Management</title>
+    <link rel="stylesheet" href="css/designFloorsCss.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+
+<body>
+    <script src="js/FloorOccupancy.js"></script>
+    <div class="header">
+        <h1 class="occupancy-title">Headcount Management</h1>
+    </div>
+
+    <div class="container">
+        <div class="main-layout">
+
+            <!-- LEFT PANEL -->
+            <div class="left-panel">
+                <div class="search-section">
+                    <div class="search-box">
+                        <div class="search-icon"></div>
+                        <input type="text" id="searchInput" placeholder="Search">
+                    </div>
+
+                    <div class="filters">
+                        <select id="floorFilter">
+                            <option value="all">All Floors</option>
+                            <option value="1">Floor 1</option>
+                            <option value="2">Floor 2</option>
+                        </select>
+
+                        <select id="sortField">
+                            <option value="number">Room Number</option>
+                            <option value="Name">Room Name</option>
+                            <option value="status">Status</option>
+                            <option value="floor">Floor</option>
+                            <option value="peopleNum">People Count</option>
+                        </select>
+
+                        <button class="filter-btn active" onclick="setSort('asc', event)">Ascending</button>
+                        <button class="filter-btn" onclick="setSort('desc', event)">Descending</button>
+                    </div>
+                </div>
+
+                <div class="room-list" id="roomList"></div>
+            </div>
+
+            <!-- RIGHT PANEL -->
+            <div class="right-panel" id="detailsPanel">
+                <div class="empty-state">
+                    <h2>🏢</h2>
+                    <p>Select a room to view details</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>
