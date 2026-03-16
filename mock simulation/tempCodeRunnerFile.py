@@ -32,8 +32,9 @@ conn = mysql.connector.connect(
     database="mmwave_sim"
 )
 cursor = conn.cursor()
+cursor.execute("DROP TABLE IF EXISTS detections;")
 cursor.execute("""
-CREATE TABLE IF NOT EXISTS detections (
+CREATE TABLE detections (
     obj_id INT,
     distance FLOAT,
     velocity FLOAT,
@@ -41,7 +42,6 @@ CREATE TABLE IF NOT EXISTS detections (
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 """)
-cursor.execute("TRUNCATE TABLE detections;")
 conn.commit()
 
 # -------------------------------
@@ -135,7 +135,7 @@ def update_plot(frame=None):
     ax.set_ylabel("Y (m)")
     ax.set_title(
         "Simulated mmWave Radar Detections\n"
-        "Green = Recent\n" 
+        "Green = Recent\n"
         "Yellow = 61-120 seconds ago\n"
         "Red = 121-180 seconds ago"
     )
@@ -180,7 +180,7 @@ btn_save.on_clicked(save_pdf)
 # -------------------------------
 # FuncAnimation for automatic updates
 # -------------------------------
-ani = FuncAnimation(fig, update_plot, interval=UPDATE_INTERVAL)
+ani = FuncAnimation(fig, update_plot, interval=UPDATE_INTERVAL, cache_frame_data=False)
 update_plot()  # Initial plot
 plt.show()
 
