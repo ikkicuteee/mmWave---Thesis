@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Indoor Occupancy Monitoring</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<h1>Indoor Occupancy Monitoring</h1>
+
+<!-- TOP CARDS -->
+<div class="cards">
+
+<div class="card">
+
+    <span class="status-dot green"></span>
+
+    <img src="assets/room_active.png" class="card-img">
+    <div class="card-text">
+        <h3>Active Room</h3>
+        <h2>1</h2>
+    </div>
+</div>
+
+<div class="card">
+    <img src="assets/current_people.png" class="card-img">
+    <div class="card-text">
+        <h3>Total in Building</h3>
+        <h2>5</h2>
+        <p>People Detected</p>
+    </div>
+</div>
+
+<div class="card">
+
+    <span class="status-dot green"></span>
+
+    <img src="assets/sensor.png" class="card-img">
+    <div class="card-text">
+        <h3>Active Sensor</h3>
+        <h2>1 / 1</h2>
+    </div>
+</div>
+
+<div class="card">
+    <img src="assets/clock_update.png" class="card-img">
+    <div class="card-text">
+        <h3>Last Updated</h3>
+        <h2>3:15 PM</h2>
+    </div>
+</div>
+
+</div>
+
+
+<!-- FLOOR OVERVIEW -->
+<h2>Floor Overview</h2>
+
+<div class="floors">
+
+<a href="floor1.html" class="floor">
+
+    <span class="status-dot green"></span>
+
+    <img src="assets/floor_icon.png" class="floor-img">
+    <div class="floor-text">
+        <h3>Floor 1</h3>
+        <p>5 People</p>
+    </div>
+</a>
+
+<a href="floor2.html" class="floor">
+
+    <span class="status-dot grey"></span>
+
+    <img src="assets/floor_icon.png" class="floor-img">
+    <div class="floor-text">
+        <h3>Floor 2</h3>
+        <p>0 People</p>
+    </div>
+</a>
+
+</div>
+
+
+<!-- PEOPLE COUNT TABLE -->
+<h2>Overall People Counting</h2>
+
+<table>
+
+<tr>
+<th>Room ID</th>
+<th>Name</th>
+<th>Active People</th>
+<th>Status</th>
+</tr>
+
+<tr>
+<td>101</td>
+<td>Office</td>
+<td>5</td>
+<td class="online">Online</td>
+</tr>
+
+<tr>
+<td>201</td>
+<td>Laboratory</td>
+<td>0</td>
+<td class="nosensors">No available sensors</td>
+</tr>
+
+<tr>
+<td>202</td>
+<td>Laboratory</td>
+<td>0</td>
+<td class="nosensors">No available sensors</td>
+</tr>
+
+</table>
+
+</body>
+</html>
