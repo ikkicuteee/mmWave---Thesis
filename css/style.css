@@ -1,6 +1,6 @@
 body{
 font-family:Arial;
-background:#1f3c4d;
+background:#17314a;
 color:white;
 padding:20px;
 }
@@ -15,7 +15,7 @@ margin-bottom:30px;
 
 .card{
 position:relative;
-background:#3f6072;
+background:#152b3f;
 padding:20px;
 border-radius:10px;
 width:230px;
@@ -58,7 +58,7 @@ margin-bottom:30px;
 
 .floor{
 position:relative;
-background:#3f6072;
+background:#152b3f;
 padding:20px;
 border-radius:10px;
 width:220px;
@@ -72,7 +72,7 @@ color:white;
 }
 
 .floor:hover{
-background:#4c7387;
+background:#152b3f;
 }
 
 .floor-img{
@@ -97,7 +97,7 @@ opacity:0.8;
 table{
 width:100%;
 border-collapse:collapse;
-background:#3f6072;
+background:#152b3f;
 }
 
 th, td{

@@ -13,7 +13,7 @@
 
         const roomsData = [
             {
-                id: 1, number: '101', Name: 'Main Lobby', status: 'Online', floor: 1, peopleNum: 2, lastUpdate: '20',
+                id: 1, number: '101', Name: 'Main Lobby', status: 'Online', floor: 1, peopleNum: 5, lastUpdate: '20',
                 trend: [0, 4, 0, 1, 1, 2, 3, 4, 3, 2, 2, 3, 4, 3, 2, 2, 3, 2, 1, 1, 0, 0, 0, 0]
             },
             {
@@ -21,15 +21,7 @@
                 trend: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
             },
             {
-                id: 3, number: '103', Name: 'Office Room', status: 'Online', floor: 1, peopleNum: 4, lastUpdate: '20',
-                trend: [0, 0, 0, 0, 1, 2, 4, 5, 6, 5, 4, 3, 4, 5, 4, 5, 4, 3, 2, 1, 0, 0, 0, 0]
-            },
-            {
-                id: 4, number: '201', Name: 'Lecture Hall', status: 'Online', floor: 2, peopleNum: 1, lastUpdate: '20',
-                trend: [0, 0, 0, 0, 0, 1, 2, 3, 2, 1, 0, 1, 2, 3, 1, 3, 2, 1, 1, 0, 0, 0, 0, 0]
-            },
-            {
-                id: 5, number: '202', Name: 'Conference Room', status: 'Offline', floor: 2, peopleNum: 0, lastUpdate: '20',
+                id: 3, number: '103', Name: 'Office Room', status: 'Offline', floor: 1, peopleNum: 0, lastUpdate: '20',
                 trend: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
             }
         ];

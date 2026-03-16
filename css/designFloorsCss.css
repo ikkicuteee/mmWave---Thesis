@@ -124,6 +124,7 @@
 
         .status-Online  { background: #2ecc7122; color: #2ecc71; }
         .status-Offline { background: #e74c3c22; color: #e74c3c; }
+        .status-No.Sensor { background: #45464622; color: #8a8e8f; }
 
         .right-panel {
             background: rgba(255,255,255,0.05);
