@@ -1,17 +1,19 @@
 import random
-import time
 import math
 import mysql.connector
-import pandas as pd
+import matplotlib
+matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Button
-import pandas as pd
 from sqlalchemy import create_engine
+import pandas as pd
+from datetime import datetime
+from matplotlib.animation import FuncAnimation
 
 # -------------------------------
 # Configuration
 # -------------------------------
-UPDATE_INTERVAL = 5  # seconds between updates
+UPDATE_INTERVAL = 10000  # milliseconds (10 seconds)
 KEEP_LAST_N = 3
 MAX_OBJECTS = 5
 COLOR_MAP = {0: "red", 1: "yellow", 2: "green"}  # oldest to newest
@@ -36,10 +38,25 @@ cursor.execute(
 )
 cursor.execute("TRUNCATE TABLE detections;")
 
+# SQLAlchemy engine for pandas
+engine = create_engine("mysql+pymysql://root:root123@localhost/mmwave_sim")
+
 # -------------------------------
 # Simulation State
 # -------------------------------
 simulation_on = True
+history = {i: [] for i in range(1, MAX_OBJECTS + 1)}  # last positions for plotting
+
+# -------------------------------
+# Pre-fill history with fake positions for all colors
+# -------------------------------
+for obj_id in range(1, MAX_OBJECTS + 1):
+    for _ in range(KEEP_LAST_N):
+        dist = round(random.uniform(0.5, 1.5), 2)
+        ang = round(random.uniform(-180, 180), 1)
+        x = SENSOR_X + dist * math.sin(math.radians(ang))
+        y = SENSOR_Y + dist * math.cos(math.radians(ang))
+        history[obj_id].append((x, y))
 
 # -------------------------------
 # Functions
@@ -74,75 +91,98 @@ def get_latest_data():
     return df
 
 def toggle_sim(event):
-    """Button click handler to toggle simulation."""
     global simulation_on
     simulation_on = not simulation_on
+    btn_toggle.label.set_text("Stop Simulation" if simulation_on else "Start Simulation")
+    print("Simulation resumed" if simulation_on else "Simulation paused")
+
+def save_pdf(event):
+    now = datetime.now().strftime("%H-%M-%S")
+    filename = f"SAR_{now}.pdf"
+    fig.savefig(filename)
+    print(f"Radar image saved as {filename}.")
+
+def update_plot(frame=None):
+    global history
+    # -------------------------------
+    # Step 1: Insert new fake data if simulation is on
+    # -------------------------------
     if simulation_on:
-        button.label.set_text("Stop Simulation")
-        print("Simulation resumed ✅")
-    else:
-        button.label.set_text("Start Simulation")
-        print("Simulation paused ⏸️")
+        for obj_id in range(1, MAX_OBJECTS + 1):
+            dist, vel, ang = insert_fake_data(obj_id)
+            x = SENSOR_X + dist * math.sin(math.radians(ang))
+            y = SENSOR_Y + dist * math.cos(math.radians(ang))
+
+            # Append new position
+            history[obj_id].append((x, y))
+
+            # Keep only last 3 positions
+            if len(history[obj_id]) > KEEP_LAST_N:
+                history[obj_id].pop(0)
+
+        clean_old_data()
+
+    # -------------------------------
+    # Step 2: Clear and redraw
+    # -------------------------------
+    ax.clear()
+    ax.set_xlim(0, ROOM_WIDTH)
+    ax.set_ylim(0, ROOM_LENGTH)
+    ax.set_xlabel("X (m)")
+    ax.set_ylabel("Y (m)")
+    ax.set_title(
+        "Simulated mmWave Radar Detections\n"
+        "Green = Recent\n" \
+        "Yellow = 61-120 seconds ago\n" \
+        "Red = 121-180 seconds ago"
+    )
+    ax.grid(True)
+
+    # -------------------------------
+    # Step 3: Draw each object's last positions
+    # -------------------------------
+    human_count = 0
+    for obj_id, positions in history.items():
+        n = len(positions)
+        if n > 0:
+            human_count += 1
+
+        for idx, (x, y) in enumerate(positions):
+            color = COLOR_MAP[idx]  # red, yellow, green
+            ax.scatter(x, y, s=100, c=color)
+            ax.text(x, y, str(obj_id), fontsize=12, fontweight='bold', ha='center', va='center')
+
+    # -------------------------------
+    # Step 4: Display current system time and human count
+    # -------------------------------
+    current_time = datetime.now().strftime("%H:%M:%S")
+    ax.text(0.02, 1.02, f"Current Time: {current_time}", transform=ax.transAxes, fontsize=10)
+    ax.text(0.7, 1.02, f"Human Detected: {human_count}", transform=ax.transAxes, fontsize=10)
 
 # -------------------------------
 # Setup Visualization
 # -------------------------------
-plt.ion()
-fig, ax = plt.subplots()
-plt.subplots_adjust(bottom=0.2)  # leave space for button
+fig, ax = plt.subplots(figsize=(8, 8))
+plt.subplots_adjust(bottom=0.25)
 
-# Button
-ax_button = plt.axes([0.4, 0.05, 0.2, 0.075])  # x, y, width, height
-button = Button(ax_button, 'Stop Simulation')
-button.on_clicked(toggle_sim)
+# Buttons
+ax_toggle = plt.axes([0.1, 0.05, 0.25, 0.075])
+btn_toggle = Button(ax_toggle, "Stop Simulation")
+btn_toggle.on_clicked(toggle_sim)
 
-ax.set_xlim(0, ROOM_WIDTH)
-ax.set_ylim(0, ROOM_LENGTH)
-ax.set_xlabel("X (m)")
-ax.set_ylabel("Y (m)")
-ax.set_title("Simulated mmWave Radar Detections\n(Green=Newest, Red=Oldest)")
+ax_save = plt.axes([0.4, 0.05, 0.25, 0.075])
+btn_save = Button(ax_save, "Save PDF")
+btn_save.on_clicked(save_pdf)
 
 # -------------------------------
-# SQLAlchemy engine for pandas
+# FuncAnimation for automatic updates
 # -------------------------------
-engine = create_engine("mysql+pymysql://root:root123@localhost/mmwave_sim")
+ani = FuncAnimation(fig, update_plot, interval=UPDATE_INTERVAL)
+update_plot()  # Initial plot
+plt.show()
 
 # -------------------------------
-# Main Loop
+# Close DB on exit
 # -------------------------------
-try:
-    while True:
-        if simulation_on:
-            for obj_id in range(1, MAX_OBJECTS + 1):
-                dist, vel, ang = insert_fake_data(obj_id)
-                print(f"Object {obj_id}: Distance={dist}m, Velocity={vel}m/s, Angle={ang}°")
-            clean_old_data()
-
-        # Draw plot
-        df = get_latest_data()
-        ax.clear()
-        ax.set_xlim(0, ROOM_WIDTH)
-        ax.set_ylim(0, ROOM_LENGTH)
-        ax.set_xlabel("X (m)")
-        ax.set_ylabel("Y (m)")
-        ax.set_title("Simulated mmWave Radar Detections\n(Green = Recent, Yellow = 5-10 seconds ago, Red = 11-15 seconds ago)")
-
-        for obj_id in range(1, MAX_OBJECTS + 1):
-            obj_data = df[df['id'] == obj_id].reset_index()
-            n = len(obj_data)
-            for i, row in obj_data.iterrows():
-                angle_rad = math.radians(row['angle'])
-                x = SENSOR_X + row['distance'] * math.sin(angle_rad)
-                y = SENSOR_Y + row['distance'] * math.cos(angle_rad)
-                color_idx = max(0, n - i - 1)
-                color = COLOR_MAP[color_idx]
-                ax.scatter(x, y, s=100, c=color)
-                ax.text(x, y, str(row['id']))
-
-        plt.pause(0.1)
-        time.sleep(UPDATE_INTERVAL)
-
-except KeyboardInterrupt:
-    print("\nSimulation stopped.")
-    cursor.close()
-    conn.close()
+cursor.close()
+conn.close()
